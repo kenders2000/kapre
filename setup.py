@@ -20,6 +20,10 @@ setup(
         'librosa >= 0.7.2',
         'tensorflow >= 2.0.0'
     ],
+    extras_require={
+        "tf": ["tensorflow>= 2.0.0"],
+        "tf_gpu": ["tensorflow-gpu>= 2.0.0"],
+    },
     keywords='audio music speech sound deep learning keras tensorflow',
     zip_safe=False,
 )
