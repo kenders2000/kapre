@@ -1,18 +1,17 @@
 """Tflite compatible versions of Kapre layers.
 
-STFTTflite is a tflite compatible version of STFT. Tflite does not support complex
+`STFTTflite` is a tflite compatible version of `STFT`. Tflite does not support complex
 types, thus real and imaginary parts are returned as an extra (last) dimension.
-Ouput shape is now: (batch, channel, time, re/im) or (batch, time, channel, re/im).
+Ouput shape is now: `(batch, channel, time, re/im)` or `(batch, time, channel, re/im)`.
 
 Because of the change of dimension, Tflite compatible layers are provided to
-process the resulting STFT; MagnitudeTflite and PhaseTflite are layers that
-calculate the magnitude and phase respectively from the output of STFTTflite.
+process the resulting STFT; `MagnitudeTflite` and `PhaseTflite` are layers that
+calculate the magnitude and phase respectively from the output of `STFTTflite`.
 """
 import tensorflow as tf
-from . import backend
-from tensorflow.keras import backend as K
 from .backend import _CH_FIRST_STR, _CH_LAST_STR, _CH_DEFAULT_STR
 from .tflite_compatible_stft import stft_tflite, atan2_tflite
+
 # import non-tflite compatible layers to inheret from.
 from .time_frequency import STFT, InverseSTFT, Magnitude, Phase
 
@@ -23,6 +22,7 @@ __all__ = [
     'MagnitudeTflite',
     'PhaseTflite',
 ]
+
 
 class STFTTflite(STFT):
     """
@@ -35,8 +35,8 @@ class STFTTflite(STFT):
 
     Additionally, it reshapes the output to be a proper 2D batch.
 
-    If `output_data_format == 'channels_last'`, the output shape is (batch, time, freq, channel, re/imag)
-    If `output_data_format == 'channels_first'`, the output shape is (batch, channel, time, freq, re/imag)
+    If `output_data_format == 'channels_last'`, the output shape is `(batch, time, freq, channel, re/imag)`
+    If `output_data_format == 'channels_first'`, the output shape is `(batch, channel, time, freq, re/imag)`
 
     Args:
         n_fft (int): Number of FFTs. Defaults to `2048`
@@ -60,15 +60,14 @@ class STFTTflite(STFT):
 
     Example:
         ::
-            # tflite compatible model
+
             input_shape = (2048, 1)  # mono signal
-            model = Sequential()
+            model = Sequential()  # tflite compatible model
             model.add(kapre.STFTTflite(n_fft=1024, hop_length=512, input_shape=input_shape))
             # now the shape is (batch, n_frame=3, n_freq=513, ch=1, re/im=2)
             # and the dtype is real
 
     """
-
 
     def call(self, x):
         """
@@ -78,14 +77,11 @@ class STFTTflite(STFT):
             x (float `Tensor`): batch of audio signals, (batch, ch, time) or (batch, time, ch) based on input_data_format
 
         Return:
-            (real `Tensor`): A STFT representation of x in a 2D batch shape. The
-            last dimension is size two and contains the real and imaginary parts
-            of the stft. Its shape is (batch, time, freq, ch, 2) or (batch. ch,
-                time, freq, 2) depending on `output_data_format` and `time` is
-                the number of frames, which is `((len_src + (win_length -
-                hop_length) / hop_length) // win_length )` if `pad_end` is `True`.
-                `freq` is the number of fft unique bins, which is `n_fft // 2 + 1`
-                (the unique components of the FFT).
+            (real `Tensor`): A STFT representation of x in a 2D batch shape. The last dimension is size two and contains
+            the real and imaginary parts of the stft.
+            Its shape is (batch, time, freq, ch, 2) or (batch. ch, time, freq, 2) depending on `output_data_format` and
+            `time` is the number of frames, which is `((len_src + (win_length - hop_length) / hop_length) // win_length )`
+            if `pad_end` is `True`. `freq` is the number of fft unique bins, which is `n_fft // 2 + 1` (the unique components of the FFT).
         """
         waveforms = x  # (batch, ch, time) if input_data_format == 'channels_first'.
         # (batch, time, ch) if input_data_format == 'channels_last'.
@@ -139,6 +135,7 @@ class MagnitudeTflite(Magnitude):
             x (real or complex `Tensor`): input is real tensor whose last
                 dimension has a size of `2` and represents real and imaginary
                 parts
+
         Returns:
             (float `Tensor`): magnitude of `x`
         """
@@ -154,11 +151,11 @@ class PhaseTflite(Phase):
     approximations in the training data.
 
     Args:
-        approx_atan_accuracy (`int`): if `None` will use tf.math.angle() to
+        approx_atan_accuracy (`int`): if `None` will use `tf.math.angle()` to
             calculate the phase accurately. If an `int` this is the number of
-            iterations to calculate the approximate atan() using a tflite compatible
+            iterations to calculate the approximate `atan()` using a tflite compatible
             method. the higher the number the more accurate e.g.
-            approx_atan_accuracy=29000. You may want to experiment with adjusting
+            `approx_atan_accuracy=29000`. You may want to experiment with adjusting
             this number: trading off accuracy with inference speed.
 
     Example:

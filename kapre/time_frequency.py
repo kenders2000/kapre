@@ -19,9 +19,10 @@ Note:
 
 """
 import tensorflow as tf
-from tensorflow.keras.layers import Layer, Conv2D
-from . import backend
 from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Layer
+
+from . import backend
 from .backend import _CH_FIRST_STR, _CH_LAST_STR, _CH_DEFAULT_STR
 from .tflite_compatible_stft import atan2_tflite
 
@@ -138,10 +139,10 @@ class STFT(Layer):
 
         Return:
             (complex `Tensor`): A STFT representation of x in a 2D batch shape.
-            `complex64` if `x` is `float32`. `complex128` if `x` is `float64`.
+            `complex64` if `x` is `float32`, `complex128` if `x` is `float64`.
             Its shape is (batch, time, freq, ch) or (batch. ch, time, freq) depending on `output_data_format` and
-                `time` is the number of frames, which is `((len_src + (win_length - hop_length) / hop_length) // win_length )` if `pad_end` is `True`.
-                `freq` is the number of fft unique bins, which is `n_fft // 2 + 1` (the unique components of the FFT).
+            `time` is the number of frames, which is `((len_src + (win_length - hop_length) / hop_length) // win_length )` if `pad_end` is `True`.
+            `freq` is the number of fft unique bins, which is `n_fft // 2 + 1` (the unique components of the FFT).
         """
         waveforms = x  # (batch, ch, time) if input_data_format == 'channels_first'.
         # (batch, time, ch) if input_data_format == 'channels_last'.
@@ -426,7 +427,11 @@ class MagnitudeToDecibel(Layer):
     def get_config(self):
         config = super(MagnitudeToDecibel, self).get_config()
         config.update(
-            {'amin': self.amin, 'dynamic_range': self.dynamic_range, 'ref_value': self.ref_value,}
+            {
+                'amin': self.amin,
+                'dynamic_range': self.dynamic_range,
+                'ref_value': self.ref_value,
+            }
         )
         return config
 
@@ -464,7 +469,11 @@ class ApplyFilterbank(Layer):
     """
 
     def __init__(
-        self, type, filterbank_kwargs, data_format='default', **kwargs,
+        self,
+        type,
+        filterbank_kwargs,
+        data_format='default',
+        **kwargs,
     ):
 
         backend.validate_data_format_str(data_format)
@@ -684,6 +693,8 @@ class ConcatenateFrequencyMap(Layer):
     def get_config(self):
         config = super(ConcatenateFrequencyMap, self).get_config()
         config.update(
-            {'data_format': self.data_format,}
+            {
+                'data_format': self.data_format,
+            }
         )
         return config

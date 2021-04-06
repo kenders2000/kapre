@@ -18,6 +18,7 @@ setup(
     install_requires=[
         'numpy >= 1.18.5',
         'librosa >= 0.7.2',
+        'tensorflow >= 2.0.0'
     ],
     extras_require={
         "tf": ["tensorflow>= 2.0.0"],

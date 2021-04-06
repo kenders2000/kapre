@@ -269,6 +269,10 @@ def test_melspectrogram_correctness(
 @pytest.mark.parametrize('data_format', ['default', 'channels_first', 'channels_last'])
 @pytest.mark.parametrize('batch_size', [1, 2])
 @pytest.mark.parametrize('win_length', [1000, 512])
+<<<<<<< HEAD
+=======
+@pytest.mark.parametrize('pad_end', [False, True])
+>>>>>>> master
 def test_spectrogram_tflite_correctness(
     n_fft, hop_length, n_ch, data_format, batch_size, win_length
 ):
@@ -405,7 +409,11 @@ def test_mag_phase(data_format):
     mag_phase_ref = np.stack(
         librosa.magphase(
             librosa.stft(
-                src_mono, n_fft=n_fft, hop_length=hop_length, win_length=win_length, center=False,
+                src_mono,
+                n_fft=n_fft,
+                hop_length=hop_length,
+                win_length=win_length,
+                center=False,
             ).T
         ),
         axis=ch_axis,
@@ -413,8 +421,20 @@ def test_mag_phase(data_format):
     np.testing.assert_equal(mag_phase_kapre.shape, mag_phase_ref.shape)
     # magnitude test
     np.testing.assert_allclose(
-        np.take(mag_phase_kapre, [0,], axis=ch_axis,),
-        np.take(mag_phase_ref, [0,], axis=ch_axis,),
+        np.take(
+            mag_phase_kapre,
+            [
+                0,
+            ],
+            axis=ch_axis,
+        ),
+        np.take(
+            mag_phase_ref,
+            [
+                0,
+            ],
+            axis=ch_axis,
+        ),
         atol=2e-4,
     )
     # phase test - todo - yeah..
